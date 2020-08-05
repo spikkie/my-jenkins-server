@@ -1,0 +1,41 @@
+version: '3.3'
+services:
+    jenkins-master:
+        image: my-jenkins-server
+
+        restart: always
+
+        container_name: my-jenkins-server-${PROJECT}
+
+        network_mode: bridge
+
+        build:
+            context: .
+            args:
+                PROJECT: ${PROJECT}
+
+        environment:
+            JAVA_OPTS: "-Djava.awt.headless=true"
+
+        ports:
+            - '8080:8080'
+            - '50000:50000'
+
+        volumes:
+            - type: volume
+              source: log
+              target: /var/log/jenkins
+            - type: volume
+              source: data
+              target: /var/jenkins_home
+            - type: bind
+              source: /var/run/docker.sock
+              target: /var/run/docker.sock
+
+        restart: unless-stopped
+
+volumes:
+    log:
+    data:
+
+
